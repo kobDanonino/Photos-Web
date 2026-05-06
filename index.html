@@ -6,37 +6,89 @@
     <title>Moonlight Staff - Menu</title>
     <style>
         body {
-            margin: 0; padding: 0; background-color: #000; color: white;
-            font-family: 'Segoe UI', sans-serif; display: flex;
-            flex-direction: column; align-items: center; justify-content: center; height: 100vh;
+            margin: 0; padding: 0; 
+            /* Configuración del fondo para que sea muy visible */
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://files.catbox.moe/tut48g.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
+            color: white;
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh;
+            overflow: hidden;
         }
+
         /* Banner esquina */
         .corner-banner {
-            position: absolute; top: 15px; left: 15px; display: flex; align-items: center;
+            position: absolute; top: 15px; left: 15px; 
+            display: flex; align-items: center;
+            background: rgba(0, 0, 0, 0.5); /* Fondo oscuro para legibilidad */
+            padding: 5px 12px;
+            border-radius: 30px;
         }
         .corner-banner img {
-            width: 40px; height: 40px; border-radius: 50%; border: 1px solid #333;
+            width: 35px; height: 35px; border-radius: 50%; border: 1px solid #00f2ff;
         }
-        .corner-banner span { margin-left: 10px; font-weight: bold; font-size: 0.9em; color: #aaa; }
+        .corner-banner span { margin-left: 10px; font-weight: bold; font-size: 0.85em; color: #fff; text-shadow: 0 0 5px #000; }
 
-        /* Burbujas */
-        .bubble-container { display: flex; flex-direction: column; gap: 20px; z-index: 2; }
+        /* Contenedor Burbujas */
+        .bubble-container { display: flex; flex-direction: column; gap: 25px; z-index: 2; }
+
+        /* Estilo Neón Cromático */
         .bubble {
-            background: linear-gradient(145deg, #1e1e1e, #000);
-            padding: 20px 60px; border-radius: 50px; text-decoration: none;
-            color: white; font-weight: bold; font-size: 1.2em;
-            text-align: center; border: 1px solid #333; transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.7); /* Transparencia para ver el fondo a través */
+            padding: 18px 70px; 
+            border-radius: 50px; 
+            text-decoration: none;
+            color: white; 
+            font-weight: bold; 
+            font-size: 1.3em;
+            text-align: center; 
+            border: 3px solid transparent;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), linear-gradient(45deg, #00f2ff, #7000ff);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.5), 0 0 30px rgba(112, 0, 255, 0.4);
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(5px); /* Efecto cristalizado */
         }
-        .bubble:hover { transform: scale(1.05); border-color: #007bff; }
+
+        .bubble:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.8), 0 0 50px rgba(112, 0, 255, 0.7);
+            filter: brightness(1.2);
+        }
 
         /* Banner Developer */
-        .dev-section { margin-top: 40px; text-align: center; }
-        .dev-banner {
-            width: 120px; height: 120px; border-radius: 50%;
-            border: 2px solid #007bff; object-fit: cover;
+        .dev-section { 
+            margin-top: 50px; 
+            text-align: center; 
+            background: rgba(0, 0, 0, 0.4); 
+            padding: 20px; 
+            border-radius: 20px;
+            backdrop-filter: blur(3px);
         }
-        .dev-name { margin-top: 10px; font-size: 1.1em; color: #888; }
+        .dev-banner {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 2px solid #7000ff; object-fit: cover;
+            box-shadow: 0 0 20px rgba(112, 0, 255, 0.6);
+        }
+        .dev-name { 
+            margin-top: 15px; 
+            font-size: 1.2em; 
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 10px #7000ff, 0 0 20px #000;
+        }
     </style>
 </head>
 <body>
@@ -47,8 +99,8 @@
     </div>
 
     <div class="bubble-container">
-        <a href="tetas.html" class="bubble">TETAS</a>
-        <a href="penes.html" class="bubble">PENES</a>
+        <a href="tetas.html" class="bubble">Tetas</a>
+        <a href="penes.html" class="bubble">Penes</a>
     </div>
 
     <div class="dev-section">
