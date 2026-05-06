@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonlight Staff - Menu</title>
+    <style>
+        body {
+            margin: 0; padding: 0; background-color: #000; color: white;
+            font-family: 'Segoe UI', sans-serif; display: flex;
+            flex-direction: column; align-items: center; justify-content: center; height: 100vh;
+        }
+        /* Banner esquina */
+        .corner-banner {
+            position: absolute; top: 15px; left: 15px; display: flex; align-items: center;
+        }
+        .corner-banner img {
+            width: 40px; height: 40px; border-radius: 50%; border: 1px solid #333;
+        }
+        .corner-banner span { margin-left: 10px; font-weight: bold; font-size: 0.9em; color: #aaa; }
+
+        /* Burbujas */
+        .bubble-container { display: flex; flex-direction: column; gap: 20px; z-index: 2; }
+        .bubble {
+            background: linear-gradient(145deg, #1e1e1e, #000);
+            padding: 20px 60px; border-radius: 50px; text-decoration: none;
+            color: white; font-weight: bold; font-size: 1.2em;
+            text-align: center; border: 1px solid #333; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .bubble:hover { transform: scale(1.05); border-color: #007bff; }
+
+        /* Banner Developer */
+        .dev-section { margin-top: 40px; text-align: center; }
+        .dev-banner {
+            width: 120px; height: 120px; border-radius: 50%;
+            border: 2px solid #007bff; object-fit: cover;
+        }
+        .dev-name { margin-top: 10px; font-size: 1.1em; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="corner-banner">
+        <img src="https://files.catbox.moe/da8obc.jpeg" alt="Logo">
+        <span>Moonlight Staff</span>
+    </div>
+
+    <div class="bubble-container">
+        <a href="tetas.html" class="bubble">TETAS</a>
+        <a href="penes.html" class="bubble">PENES</a>
+    </div>
+
+    <div class="dev-section">
+        <img src="https://files.catbox.moe/mqcxut.jpeg" class="dev-banner" alt="Dev">
+        <div class="dev-name">Developer: 𝓢𝓽𝓪𝓻𝓛𝔂𝓷</div>
+    </div>
+
+</body>
+</html>
