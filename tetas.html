@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="icon" href="https://files.catbox.moe/da8obc.jpeg" type="image/jpeg">
+    
     <title>Viewer - Tetas</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: #000; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; 
+        }
         img, video { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .back { position: absolute; top: 10px; right: 10px; color: white; text-decoration: none; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 0.8em; }
+        .back { 
+            position: absolute; top: 10px; right: 10px; 
+            color: white; text-decoration: none; 
+            background: rgba(255,255,255,0.1); padding: 5px 15px; 
+            border-radius: 20px; font-size: 0.8em; font-family: sans-serif;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
@@ -17,43 +30,42 @@
     <script>
         const media = [
             "https://files.catbox.moe/jl76up.jpg",
-"https://files.catbox.moe/8nkq83.jpg",
-"https://files.catbox.moe/urh2of.jpg",
-"https://files.catbox.moe/h22p1a.jpg",
-"https://files.catbox.moe/dhcgo9.jpg",
-"https://files.catbox.moe/pa8rgg.jpg",
-"https://files.catbox.moe/qnvp4y.jpg",
-"https://files.catbox.moe/3gcxfy.jpg",
-"https://files.catbox.moe/fo2mt7.jpg",
-"https://files.catbox.moe/hjhsl8.jpg",
-"https://files.catbox.moe/u1o9pf.jpg",
-"https://files.catbox.moe/7rgxw7.jpg",
-"https://files.catbox.moe/67vgin.jpg",
-"https://files.catbox.moe/3i737s.jpg",
-"https://files.catbox.moe/svfbd9.jpg",
-"https://files.catbox.moe/r7002l.jpg",
-"https://files.catbox.moe/de0jag.jpg",
-"https://files.catbox.moe/y5w63e.jpg",
-"https://files.catbox.moe/xa45o8.jpg",
-"https://files.catbox.moe/wwtmxu.jpg",
-"https://files.catbox.moe/9a3v74.jpg",
-"https://files.catbox.moe/tfvlvb.jpg",
-"https://files.catbox.moe/zat3ec.jpg",
-"https://files.catbox.moe/96kome.jpg"
-
-"https://files.catbox.moe/a0na12.mp4",
-"https://files.catbox.moe/n5fh2u.mp4",
-"https://files.catbox.moe/4lethn.mp4",
-"https://files.catbox.moe/nea151.mp4",
-"https://files.catbox.moe/y5bz23.mp4",
-"https://files.catbox.moe/e26ilk.mp4",            "https://files.catbox.moe/wlcdh0.mp4"
-            
+            "https://files.catbox.moe/8nkq83.jpg",
+            "https://files.catbox.moe/urh2of.jpg",
+            "https://files.catbox.moe/h22p1a.jpg",
+            "https://files.catbox.moe/dhcgo9.jpg",
+            "https://files.catbox.moe/pa8rgg.jpg",
+            "https://files.catbox.moe/qnvp4y.jpg",
+            "https://files.catbox.moe/3gcxfy.jpg",
+            "https://files.catbox.moe/fo2mt7.jpg",
+            "https://files.catbox.moe/hjhsl8.jpg",
+            "https://files.catbox.moe/u1o9pf.jpg",
+            "https://files.catbox.moe/7rgxw7.jpg",
+            "https://files.catbox.moe/67vgin.jpg",
+            "https://files.catbox.moe/3i737s.jpg",
+            "https://files.catbox.moe/svfbd9.jpg",
+            "https://files.catbox.moe/r7002l.jpg",
+            "https://files.catbox.moe/de0jag.jpg",
+            "https://files.catbox.moe/y5w63e.jpg",
+            "https://files.catbox.moe/xa45o8.jpg",
+            "https://files.catbox.moe/wwtmxu.jpg",
+            "https://files.catbox.moe/9a3v74.jpg",
+            "https://files.catbox.moe/tfvlvb.jpg",
+            "https://files.catbox.moe/zat3ec.jpg",
+            "https://files.catbox.moe/96kome.jpg", 
+            "https://files.catbox.moe/a0na12.mp4",
+            "https://files.catbox.moe/n5fh2u.mp4",
+            "https://files.catbox.moe/4lethn.mp4",
+            "https://files.catbox.moe/nea151.mp4",
+            "https://files.catbox.moe/y5bz23.mp4",
+            "https://files.catbox.moe/e26ilk.mp4",
+            "https://files.catbox.moe/wlcdh0.mp4"
         ];
 
         const selected = media[Math.floor(Math.random() * media.length)];
         const container = document.getElementById('content');
 
-        if (selected.endsWith('.mp4')) {
+        if (selected.toLowerCase().endsWith('.mp4')) {
             container.innerHTML = `<video src="${selected}" autoplay loop controls></video>`;
         } else {
             container.innerHTML = `<img src="${selected}">`;
