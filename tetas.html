@@ -3,29 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link rel="icon" href="https://files.catbox.moe/da8obc.jpeg" type="image/jpeg">
-    
-    <title>Viewer - Tetas</title>
+    <title>Moonlight - Viewer Tetas</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Rajdhani:wght@500&display=swap');
+
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: #000; overflow: hidden; 
+            background: #050505; overflow: hidden; 
             display: flex; align-items: center; justify-content: center; 
+            font-family: 'Rajdhani', sans-serif;
         }
-        img, video { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        /* Capa de escaneo estético */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,242,255,0.03) 0px, rgba(0,242,255,0.03) 1px, transparent 2px, transparent 4px);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        #content {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1;
+        }
+
+        img, video { 
+            max-width: 100%; max-height: 100%; 
+            object-fit: contain; 
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+        }
+
         .back { 
-            position: absolute; top: 10px; right: 10px; 
-            color: white; text-decoration: none; 
-            background: rgba(255,255,255,0.1); padding: 5px 15px; 
-            border-radius: 20px; font-size: 0.8em; font-family: sans-serif;
-            border: 1px solid rgba(255,255,255,0.2);
+            position: absolute; top: 20px; right: 20px; 
+            color: #00f2ff; text-decoration: none; 
+            background: rgba(0,0,0,0.8); 
+            padding: 10px 20px; 
+            border: 1px solid #00f2ff;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.7em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 10;
+            transition: 0.3s;
         }
+
+        .back:hover {
+            background: #00f2ff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0,242,255,0.6);
+        }
+
+        .loading-text {
+            color: #00f2ff;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.8em;
+            letter-spacing: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back">Volver</a>
-    <div id="content"></div>
+    <a href="index.html" class="back">← MENU</a>
+    <div id="content">
+        <div class="loading-text">DECRYPTING MEDIA...</div>
+    </div>
 
     <script>
         const media = [
@@ -65,11 +113,14 @@
         const selected = media[Math.floor(Math.random() * media.length)];
         const container = document.getElementById('content');
 
-        if (selected.toLowerCase().endsWith('.mp4')) {
-            container.innerHTML = `<video src="${selected}" autoplay loop controls></video>`;
-        } else {
-            container.innerHTML = `<img src="${selected}">`;
-        }
+        // Delay para simular acceso a base de datos
+        setTimeout(() => {
+            if (selected.toLowerCase().endsWith('.mp4')) {
+                container.innerHTML = `<video src="${selected}" autoplay loop controls></video>`;
+            } else {
+                container.innerHTML = `<img src="${selected}" alt="Moonlight Content">`;
+            }
+        }, 800);
     </script>
 </body>
 </html>
