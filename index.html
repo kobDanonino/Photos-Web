@@ -4,172 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://files.catbox.moe/da8obc.jpeg" type="image/jpeg">
-    <title>MOONLIGHT</title>
+    <title>Moonlight</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Space+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;900&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        body {
+        body, html {
+            height: 100%;
             background-color: #000;
-            color: #fff;
             font-family: 'Inter', sans-serif;
+            color: white;
             overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* Ruido de fondo sutil */
-        body::before {
-            content: "";
+        /* FONDO: Imagen fija de alta calidad que ya tienes */
+        .background-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url(https://grainy-gradients.vercel.app/noise.svg);
-            opacity: 0.05;
-            pointer-events: none;
+            background: linear-gradient(to right, rgba(0,0,0,0.8) 20%, transparent 100%), 
+                        url('https://files.catbox.moe/tut48g.jpeg');
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        /* CONTENIDO */
+        .wrapper {
+            position: relative;
             z-index: 10;
-        }
-
-        /* Header */
-        header {
-            padding: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 20;
-        }
-
-        .status {
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            color: #444;
-            letter-spacing: 2px;
-        }
-
-        /* Contenido Central */
-        main {
-            flex-grow: 1;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 5vw;
+            padding-left: 8%;
         }
 
-        .menu-item {
-            text-decoration: none;
-            color: #1a1a1a; /* Color apagado por defecto */
-            font-size: clamp(3rem, 10vw, 8rem); /* Texto gigante */
-            line-height: 0.9;
-            font-weight: 900;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            position: relative;
-            width: fit-content;
-        }
-
-        .menu-item:hover {
-            color: #fff;
-            transform: skewX(-10deg);
-        }
-
-        /* El contador pequeño al lado del texto */
-        .menu-item::after {
-            content: attr(data-count);
-            position: absolute;
-            top: 0;
-            right: -30px;
-            font-size: 1rem;
-            font-family: 'Space Mono', monospace;
-            color: #ff0055; /* Color de acento */
-            font-weight: 400;
-        }
-
-        /* Footer */
-        footer {
-            padding: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            z-index: 20;
-        }
-
-        .owner-info {
-            font-family: 'Space Mono', monospace;
+        .title {
             font-size: 12px;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            font-weight: 200;
+            margin-bottom: 20px;
+            opacity: 0.6;
         }
 
-        .owner-info span {
-            color: #ff0055;
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .stats-display {
-            text-align: right;
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            line-height: 1.5;
-            color: #666;
+        .nav-link {
+            text-decoration: none;
+            color: white;
+            font-size: 70px;
+            font-weight: 900;
+            line-height: 1;
+            transition: all 0.4s ease;
+            width: fit-content;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+            color: transparent;
         }
 
-        /* Animación de entrada */
-        .reveal {
-            animation: revealText 1s cubic-bezier(0.77, 0, 0.175, 1);
+        .nav-link:hover {
+            -webkit-text-stroke: 1px rgba(255,255,255,0);
+            color: white;
+            transform: translateX(20px);
         }
 
-        @keyframes revealText {
-            0% { transform: translateY(100px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+        /* INFO INFERIOR */
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 8%;
+            display: flex;
+            gap: 50px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.5;
+        }
+
+        .owner-tag {
+            font-weight: 900;
+            color: white;
+            opacity: 1;
         }
 
         /* Mobile */
         @media (max-width: 768px) {
-            .menu-item { font-size: 4rem; margin-bottom: 20px; }
+            .nav-link { font-size: 50px; }
+            .background-overlay { background-position: 70% center; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="status">SYSTEM: ACTIVE // STABLE</div>
-        <div class="status" id="clock">00:00:00</div>
-    </header>
+    <div class="background-overlay"></div>
 
-    <main>
-        <a href="tetas.html" class="menu-item reveal" style="animation-delay: 0.1s;">Tetas</a>
-        <a href="gay.html" class="menu-item reveal" style="animation-delay: 0.2s;">Gay</a>
-        <a href="pene.html" class="menu-item reveal" style="animation-delay: 0.3s;">Pene</a>
-    </main>
+    <div class="wrapper">
+        <div class="title">Moonlight Archive</div>
+        
+        <nav>
+            <a href="tetas.html" class="nav-link">TETAS</a>
+            <a href="gay.html" class="nav-item nav-link">GAY</a>
+            <a href="pene.html" class="nav-link">PENE</a>
+        </nav>
 
-    <footer>
-        <div class="owner-info">
-            BY <span>𝓢𝓽𝓪𝓻𝓛𝔂𝓷</span>
+        <div class="footer">
+            <div class="owner-tag">𝓢𝓽𝓪𝓻𝓛𝔂𝓷</div>
+            <div id="stats-line">0 IMG / 0 VID</div>
         </div>
-        <div class="stats-display" id="global-stats">
-            LOADING DATA...<br>
-            0 IMG / 0 VID
-        </div>
-    </footer>
+    </div>
 
     <script>
-        function updateStats() {
-            let img = 0, vid = 0;
-            ['tetas', 'gay', 'pene'].forEach(cat => {
-                const d = JSON.parse(localStorage.getItem('stats_' + cat));
-                if(d) { img += d.f || 0; vid += d.v || 0; }
+        function loadData() {
+            let i = 0, v = 0;
+            ['tetas', 'gay', 'pene'].forEach(c => {
+                const d = JSON.parse(localStorage.getItem('stats_' + c));
+                if(d) { i += d.f || 0; v += d.v || 0; }
             });
-            document.getElementById('global-stats').innerHTML = `DATABASE ACCESS<br>${img} IMG / ${vid} VID`;
+            document.getElementById('stats-line').innerHTML = `${i} IMÁGENES / ${v} VIDEOS`;
         }
-
-        function startTime() {
-            const now = new Date();
-            document.getElementById('clock').innerHTML = now.toLocaleTimeString();
-            setTimeout(startTime, 1000);
-        }
-
-        window.onload = () => {
-            updateStats();
-            startTime();
-        }
+        window.onload = loadData;
     </script>
 </body>
 </html>
