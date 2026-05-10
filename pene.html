@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://files.catbox.moe/da8obc.jpeg" type="image/jpeg">
+    <title>Moonlight - Viewer Pene</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Rajdhani:wght@500&display=swap');
+
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: #050505; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; 
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* Efecto de fondo sutil */
+        body::after {
+            content: "";
+            position: absolute;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,242,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        #content {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1;
+        }
+
+        img, video { 
+            max-width: 95%; max-height: 95%; 
+            object-fit: contain; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .back { 
+            position: absolute; top: 20px; right: 20px; 
+            color: #00f2ff; text-decoration: none; 
+            background: rgba(0,0,0,0.7); 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            font-size: 0.8em; 
+            border: 1px solid #00f2ff;
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 10;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0,242,255,0.2);
+        }
+
+        .back:hover {
+            background: #00f2ff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0,242,255,0.6);
+        }
+
+        /* Indicador de carga */
+        .loading {
+            color: #00f2ff;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.7em;
+            letter-spacing: 3px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back">← Volver</a>
+    <div id="content">
+        <div class="loading">Cargando DATABASE...</div>
+    </div>
+
+    <script>
+        const media = [
+            // --- NUEVOS LINKS SOLICITADOS ---
+            "https://files.catbox.moe/8rzptn.mp4",
+            "https://files.catbox.moe/3zeurr.mp4",
+            "https://files.catbox.moe/cct1ps.jpg",
+            "https://files.catbox.moe/3koo1x.jpg",
+            "https://files.catbox.moe/yeqqpg.jpg",
+            "https://files.catbox.moe/loikzv.jpg",
+            "https://files.catbox.moe/7xnpmt.jpg",
+            "https://files.catbox.moe/q79b0b.jpg"
+        ];
+
+        const selected = media[Math.floor(Math.random() * media.length)];
+        const container = document.getElementById('content');
+
+        // Función para renderizar
+        setTimeout(() => {
+            if (selected.toLowerCase().endsWith('.mp4')) {
+                container.innerHTML = `<video src="${selected}" autoplay loop controls></video>`;
+            } else {
+                container.innerHTML = `<img src="${selected}" alt="Moonlight Content">`;
+            }
+        }, 500); // Pequeño delay para el efecto de carga
+    </script>
+</body>
+</html>
