@@ -11,184 +11,110 @@
         :root {
             --cyan: #00f2ff;
             --dark-cyan: #00666b;
-            --purple: #bc13fe;
             --dark-bg: #030303;
-            --panel-bg: rgba(5, 10, 15, 0.85);
+            --panel-bg: rgba(5, 10, 15, 0.9);
         }
 
         body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            background: var(--dark-bg);
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--dark-bg); color: white;
+            font-family: 'Rajdhani', sans-serif; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        .bg-video-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('https://files.catbox.moe/tut48g.jpeg');
-            background-size: cover;
-            background-position: center;
-            z-index: -1;
-            filter: grayscale(0.5) brightness(0.4);
-        }
-
-        .scanlines {
+        .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent 50%, rgba(0, 242, 255, 0.02) 50%);
-            background-size: 100% 4px;
-            z-index: 10; pointer-events: none;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.5)), url('https://files.catbox.moe/tut48g.jpeg');
+            background-size: cover; background-position: center; z-index: -1;
+            filter: brightness(0.4);
         }
 
         .terminal {
-            position: relative;
-            width: 90%;
-            max-width: 400px;
-            padding: 50px 30px 40px 30px;
-            background: var(--panel-bg);
+            position: relative; width: 90%; max-width: 420px;
+            padding: 40px 30px; background: var(--panel-bg);
             border: 1px solid rgba(0, 242, 255, 0.2);
             backdrop-filter: blur(15px);
-            clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 100%, 10% 100%, 0 90%);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-            animation: glitchOpen 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
-        }
-
-        @keyframes glitchOpen {
-            0% { transform: scaleY(0.005) scaleX(0); opacity: 0; }
-            100% { transform: scaleY(1) scaleX(1); }
-        }
-
-        .status-bar {
-            position: absolute; top: 12px; left: 30px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 10px; color: var(--cyan);
-            letter-spacing: 2px;
+            clip-path: polygon(0 0, 92% 0, 100% 8%, 100% 100%, 8% 100%, 0 92%);
         }
 
         .header h1 {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.9em;
-            letter-spacing: 8px;
-            color: var(--cyan);
-            margin: 0;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            font-family: 'Syncopate', sans-serif; font-size: 1em;
+            letter-spacing: 10px; color: var(--cyan); margin: 0;
         }
 
-        .sub-header {
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 35px;
-        }
-
-        .nav-links { display: flex; flex-direction: column; gap: 12px; }
+        .nav-links { display: flex; flex-direction: column; gap: 10px; margin: 30px 0; }
 
         .btn {
-            position: relative;
-            padding: 14px;
-            text-decoration: none;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1em;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            background: rgba(255,255,255,0.02);
-            border-left: 3px solid var(--dark-cyan);
-            transition: 0.3s;
-            display: flex; align-items: center; justify-content: center;
+            padding: 15px; text-decoration: none; color: white;
+            font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+            background: rgba(255,255,255,0.03); border-left: 3px solid var(--dark-cyan);
+            transition: 0.3s; text-align: center;
         }
 
         .btn:hover {
-            background: rgba(0, 242, 255, 0.08);
-            border-left: 3px solid var(--cyan);
-            transform: translateX(8px);
-            color: var(--cyan);
+            background: rgba(0, 242, 255, 0.1); border-left: 3px solid var(--cyan);
+            transform: translateX(5px); color: var(--cyan);
         }
 
-        .footer {
-            margin-top: 40px;
-            display: flex; align-items: center; gap: 15px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 20px;
-        }
-
-        .owner-avatar {
-            width: 45px; height: 45px;
-            border: 2px solid var(--cyan);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        }
-
-        .owner-name { font-size: 13px; font-weight: 700; color: #fff; }
-        .owner-label { font-size: 9px; color: var(--cyan); font-family: 'Syncopate'; opacity: 0.6; }
-
-        /* --- BARRA DINÁMICA --- */
+        /* --- BARRA DE ESTADO TÁCTICA --- */
         .status-footer-bar {
-            margin-top: 20px;
-            display: flex; flex-direction: column; gap: 6px;
+            margin-top: 25px; padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
         .bar-labels {
             display: flex; justify-content: space-between;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 10px; color: var(--cyan);
+            font-size: 11px; color: var(--cyan); margin-bottom: 8px;
         }
 
         .progress-track {
-            width: 100%; height: 4px;
+            width: 100%; height: 6px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 242, 255, 0.15);
+            border: 1px solid rgba(0, 242, 255, 0.2);
         }
 
         .progress-fill {
             height: 100%; width: 0%;
-            background: var(--cyan);
-            box-shadow: 0 0 8px var(--cyan);
-            transition: width 1s ease-in-out;
+            background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
+            transition: width 1s ease;
         }
+
+        .owner-section {
+            display: flex; align-items: center; gap: 10px; margin-top: 20px;
+        }
+        .owner-avatar { width: 40px; height: 40px; border: 1px solid var(--cyan); border-radius: 50%; }
 
     </style>
 </head>
 <body>
 
-    <div class="bg-video-overlay"></div>
-    <div class="scanlines"></div>
+    <div class="bg-overlay"></div>
 
     <div class="terminal">
-        <div class="status-bar">
-            <span>SYS.LIVE // <span id="clock">00:00:00</span></span>
-        </div>
-
         <div class="header">
             <h1>MOONLIGHT</h1>
-            <div class="sub-header">Tactical Menu Interface</div>
+            <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">ENCRYPTED DATABASE ACCESS</p>
         </div>
 
         <nav class="nav-links">
-            <a href="tetas.html" class="btn"><span>Tetas</span></a>
-            <a href="gay.html" class="btn"><span>Gay</span></a>
-            <a href="pene.html" class="btn"><span>Pene</span></a>
+            <a href="tetas.html" class="btn">Tetas</a>
+            <a href="gay.html" class="btn">Gay</a>
+            <a href="pene.html" class="btn">Pene</a>
         </nav>
 
-        <div class="footer">
+        <div class="owner-section">
             <img src="https://files.catbox.moe/mqcxut.jpeg" class="owner-avatar">
-            <div class="owner-info">
-                <div class="owner-label">AUTHORIZED BY</div>
-                <div class="owner-name">𝓢𝓽𝓪𝓻𝓛𝔂𝓷 // OWNER</div>
+            <div style="font-size: 12px;">
+                <div style="color: var(--cyan); font-family: 'Syncopate'; font-size: 8px;">ADMINISTRATOR</div>
+                <div>𝓢𝓽𝓪𝓻𝓛𝔂𝓷 // OWNER</div>
             </div>
         </div>
 
-        <!-- BARRA ACTUALIZADA -->
         <div class="status-footer-bar">
             <div class="bar-labels">
-                <span>ARCHIVOS: <span id="total-media">CONTANDO...</span></span>
-                <span>BAT: <span id="bat-level">--%</span></span>
+                <span id="counter-text">DATA: 0 IMG | 0 VID</span>
+                <span>BAT: <span id="bat-pct">--%</span></span>
             </div>
             <div class="progress-track">
                 <div class="progress-fill" id="bat-bar"></div>
@@ -197,42 +123,37 @@
     </div>
 
     <script>
-        // Reloj
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString();
-        }
-        setInterval(updateClock, 1000);
+        function updateStats() {
+            let totalFotos = 0;
+            let totalVideos = 0;
 
-        // Batería
+            // Buscamos los datos guardados de cada archivo
+            ['tetas', 'gay', 'pene'].forEach(cat => {
+                const data = JSON.parse(localStorage.getItem('stats_' + cat));
+                if(data) {
+                    totalFotos += data.f;
+                    totalVideos += data.v;
+                }
+            });
+
+            document.getElementById('counter-text').textContent = `TOTAL: ${totalFotos} IMG | ${totalVideos} VID`;
+        }
+
         function initBattery() {
-            if ('getBattery' in navigator) {
+            if (navigator.getBattery) {
                 navigator.getBattery().then(bat => {
-                    const update = () => {
-                        document.getElementById('bat-level').textContent = Math.floor(bat.level * 100) + "%";
+                    const refresh = () => {
+                        document.getElementById('bat-pct').textContent = Math.floor(bat.level * 100) + "%";
                         document.getElementById('bat-bar').style.width = (bat.level * 100) + "%";
                     };
-                    update();
-                    bat.onlevelchange = update;
+                    refresh();
+                    bat.onlevelchange = refresh;
                 });
             }
         }
 
-        // --- CONTEO AUTOMÁTICO DE ARCHIVOS ---
-        // Aquí debes poner los links que agregas diariamente para que el Index los cuente solo
-        const totalArchivos = [
-            // PEGA AQUÍ TODOS TUS LINKS (IMÁGENES Y VIDEOS)
-            "https://files.catbox.moe/ysiiz2.mp4", "https://files.catbox.moe/acues5.mp4", 
-            "https://files.catbox.moe/z4yb8h.jpg", "https://files.catbox.moe/agg3o2.jpg",
-            // ... (puedes pegar tu lista gigante aquí y el número se actualizará solo)
-        ];
-
-        // Para que sea 100% automático sin pegar la lista dos veces, 
-        // lo ideal es que este array 'totalArchivos' sea tu base de datos principal.
-        document.getElementById('total-media').textContent = totalArchivos.length;
-
+        updateStats();
         initBattery();
-        updateClock();
     </script>
 </body>
 </html>
