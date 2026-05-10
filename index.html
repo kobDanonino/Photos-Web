@@ -4,225 +4,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://files.catbox.moe/da8obc.jpeg" type="image/jpeg">
-    <title>Moonlight Collective</title>
+    <title>MOONLIGHT</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Space+Mono&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            background-color: #0a0a0a;
-            color: #ffffff;
+            background-color: #000;
+            color: #fff;
             font-family: 'Inter', sans-serif;
+            overflow: hidden;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
-        /* Encabezado sofisticado */
+        /* Ruido de fondo sutil */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url(https://grainy-gradients.vercel.app/noise.svg);
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Header */
         header {
-            padding: 40px;
+            padding: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 20;
         }
 
-        .brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            letter-spacing: -1px;
-            font-weight: 700;
-        }
-
-        .owner-pill {
-            font-size: 0.7rem;
-            text-transform: uppercase;
+        .status {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: #444;
             letter-spacing: 2px;
-            padding: 8px 16px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            color: rgba(255,255,255,0.6);
         }
 
-        /* Grid de Navegación Cinematográfico */
-        .container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            height: 60vh;
-            gap: 1px; /* Línea divisoria elegante */
-            background-color: rgba(255,255,255,0.1);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .category {
-            position: relative;
-            background-color: #0a0a0a;
+        /* Contenido Central */
+        main {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
+            padding: 0 5vw;
+        }
+
+        .menu-item {
             text-decoration: none;
-            color: white;
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-        }
-
-        .category:hover {
-            background-color: #111;
-        }
-
-        /* Imagen de fondo sutil en hover */
-        .category-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transform: scale(1.1);
-            transition: all 0.8s ease;
-            filter: grayscale(100%) brightness(30%);
-            z-index: 0;
-        }
-
-        .category:hover .category-bg {
-            opacity: 0.4;
-            transform: scale(1);
-        }
-
-        .category span {
-            position: relative;
-            z-index: 1;
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            font-style: italic;
-            transition: transform 0.4s ease;
-        }
-
-        .category:hover span {
-            transform: translateY(-10px);
-        }
-
-        .category small {
-            position: relative;
-            z-index: 1;
-            font-size: 0.6rem;
+            color: #1a1a1a; /* Color apagado por defecto */
+            font-size: clamp(3rem, 10vw, 8rem); /* Texto gigante */
+            line-height: 0.9;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            color: rgba(255,255,255,0.4);
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            width: fit-content;
         }
 
-        /* Footer con estadísticas limpias */
+        .menu-item:hover {
+            color: #fff;
+            transform: skewX(-10deg);
+        }
+
+        /* El contador pequeño al lado del texto */
+        .menu-item::after {
+            content: attr(data-count);
+            position: absolute;
+            top: 0;
+            right: -30px;
+            font-size: 1rem;
+            font-family: 'Space Mono', monospace;
+            color: #ff0055; /* Color de acento */
+            font-weight: 400;
+        }
+
+        /* Footer */
         footer {
-            padding: 40px;
+            padding: 30px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            flex-grow: 1;
+            z-index: 20;
         }
 
-        .stats-group {
-            display: flex;
-            gap: 40px;
+        .owner-info {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
         }
 
-        .stat-item {
-            display: flex;
-            flex-direction: column;
+        .owner-info span {
+            color: #ff0055;
         }
 
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 300;
-            margin-bottom: 5px;
+        .stats-display {
+            text-align: right;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            line-height: 1.5;
+            color: #666;
         }
 
-        .stat-label {
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.4);
+        /* Animación de entrada */
+        .reveal {
+            animation: revealText 1s cubic-bezier(0.77, 0, 0.175, 1);
         }
 
-        /* Ajuste para móviles */
+        @keyframes revealText {
+            0% { transform: translateY(100px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Mobile */
         @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-            .category {
-                padding: 60px 0;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-            }
-            footer {
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-                text-align: center;
-            }
+            .menu-item { font-size: 4rem; margin-bottom: 20px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand">Moonlight</div>
-        <div class="owner-pill">By 𝓢𝓽𝓪𝓻𝓛𝔂𝓷</div>
+        <div class="status">SYSTEM: ACTIVE // STABLE</div>
+        <div class="status" id="clock">00:00:00</div>
     </header>
 
-    <div class="container">
-        <a href="tetas.html" class="category">
-            <div class="category-bg" style="background-image: url('https://files.catbox.moe/jl76up.jpg');"></div>
-            <span>Tetas</span>
-            <small>Collection 01</small>
-        </a>
-        <a href="gay.html" class="category">
-            <div class="category-bg" style="background-image: url('https://files.catbox.moe/8rzptn.mp4');"></div>
-            <span>Gay</span>
-            <small>Collection 02</small>
-        </a>
-        <a href="pene.html" class="category">
-            <div class="category-bg" style="background-image: url('https://files.catbox.moe/83q63y.jpg');"></div>
-            <span>Pene</span>
-            <small>Collection 03</small>
-        </a>
-    </div>
+    <main>
+        <a href="tetas.html" class="menu-item reveal" style="animation-delay: 0.1s;">Tetas</a>
+        <a href="gay.html" class="menu-item reveal" style="animation-delay: 0.2s;">Gay</a>
+        <a href="pene.html" class="menu-item reveal" style="animation-delay: 0.3s;">Pene</a>
+    </main>
 
     <footer>
-        <div class="stats-group">
-            <div class="stat-item">
-                <span class="stat-value" id="total-img">0</span>
-                <span class="stat-label">Imágenes</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value" id="total-vid">0</span>
-                <span class="stat-label">Videos</span>
-            </div>
+        <div class="owner-info">
+            BY <span>𝓢𝓽𝓪𝓻𝓛𝔂𝓷</span>
         </div>
-        <div class="stat-item" style="text-align: right;">
-            <span class="stat-value" style="color: #666;">NSFW</span>
-            <span class="stat-label">Database Status: Active</span>
+        <div class="stats-display" id="global-stats">
+            LOADING DATA...<br>
+            0 IMG / 0 VID
         </div>
     </footer>
 
     <script>
-        function loadStats() {
-            let img = 0;
-            let vid = 0;
+        function updateStats() {
+            let img = 0, vid = 0;
             ['tetas', 'gay', 'pene'].forEach(cat => {
                 const d = JSON.parse(localStorage.getItem('stats_' + cat));
-                if(d) {
-                    img += d.f || 0;
-                    vid += d.v || 0;
-                }
+                if(d) { img += d.f || 0; vid += d.v || 0; }
             });
-            document.getElementById('total-img').textContent = img;
-            document.getElementById('total-vid').textContent = vid;
+            document.getElementById('global-stats').innerHTML = `DATABASE ACCESS<br>${img} IMG / ${vid} VID`;
         }
-        window.onload = loadStats;
-        window.onfocus = loadStats;
+
+        function startTime() {
+            const now = new Date();
+            document.getElementById('clock').innerHTML = now.toLocaleTimeString();
+            setTimeout(startTime, 1000);
+        }
+
+        window.onload = () => {
+            updateStats();
+            startTime();
+        }
     </script>
 </body>
 </html>
