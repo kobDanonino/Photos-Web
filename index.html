@@ -4,271 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://files.catbox.moe/da8obc.jpeg" type="image/jpeg">
-    <title>Moonlight | Tactical Interface</title>
+    <title>Moonlight OS</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Michroma&family=Montserrat:wght@100;400;900&display=swap');
 
         :root {
-            --cyan: #00f2ff;
-            --deep-blue: #001a1c;
-            --accent: #ff0055; /* Color para alertas */
-            --glass: rgba(0, 15, 20, 0.85);
+            --neon: #00f2ff;
+            --bg: #030303;
         }
 
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: #000; color: #fff;
-            font-family: 'Rajdhani', sans-serif;
+        * { box-sizing: border-box; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg); color: white; 
+            font-family: 'Montserrat', sans-serif; overflow: hidden;
+        }
+
+        /* Fondo dinámico con partículas de luz */
+        .ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #00151a 0%, #000 80%);
+            z-index: -1;
+        }
+
+        .glow-sphere {
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0, 242, 255, 0.05) 0%, transparent 70%);
+            top: -200px; right: -200px; animation: float 10s infinite alternate;
+        }
+
+        /* Contenedor Principal */
+        .ui-wrapper {
+            height: 100vh; display: flex; flex-direction: column;
+            padding: 40px; justify-content: space-between;
+        }
+
+        /* Header Minimalista */
+        .top-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;
+        }
+
+        .logo {
+            font-family: 'Syncopate', sans-serif; font-weight: 700;
+            letter-spacing: 12px; font-size: 1.2rem; color: var(--neon);
+            text-shadow: 0 0 15px rgba(0,242,255,0.5);
+        }
+
+        /* Menú Centralizado */
+        .menu-container {
+            display: flex; gap: 30px; align-items: center; justify-content: center;
+        }
+
+        .card {
+            position: relative; width: 280px; height: 400px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            padding: 40px 20px; text-decoration: none;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             overflow: hidden;
         }
 
-        /* Fondo con video o imagen y overlay de rejilla */
-        .viewport {
-            position: relative;
-            width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://files.catbox.moe/tut48g.jpeg');
-            background-size: cover; background-position: center;
-            display: flex; justify-content: center; align-items: center;
+        .card::before {
+            content: ''; position: absolute; top: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, var(--neon) 0%, transparent 50%);
+            opacity: 0; transition: 0.5s;
         }
 
-        .grid-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            pointer-events: none;
+        .card:hover {
+            transform: translateY(-20px); border-color: var(--neon);
+            box-shadow: 0 20px 40px rgba(0, 242, 255, 0.1);
         }
 
-        /* Marco de la Terminal */
-        .main-frame {
-            position: relative;
-            width: 90%; max-width: 450px;
-            background: var(--glass);
-            border: 2px solid var(--cyan);
-            padding: 40px 20px;
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.2), inset 0 0 20px rgba(0, 242, 255, 0.1);
-            clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%);
-            backdrop-filter: blur(10px);
+        .card:hover::before { opacity: 0.15; }
+
+        .card-title {
+            font-family: 'Michroma', sans-serif;
+            font-size: 0.8rem; letter-spacing: 4px; color: #fff;
+            text-transform: uppercase; z-index: 1;
         }
 
-        /* Decoraciones de las esquinas */
-        .corner {
-            position: absolute; width: 20px; height: 20px;
-            border: 3px solid var(--cyan);
-        }
-        .top-l { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
-        .top-r { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
-        .bot-l { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
-        .bot-r { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
-
-        /* Título con Efecto */
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem; letter-spacing: 8px;
-            margin: 0; color: var(--cyan);
-            text-shadow: 0 0 15px var(--cyan);
-            animation: flicker 3s infinite;
+        .card-number {
+            position: absolute; top: 20px; left: 20px;
+            font-family: 'Syncopate', sans-serif; font-size: 3rem;
+            opacity: 0.05; transition: 0.5s;
         }
 
-        /* Botones de Categoría */
-        .menu-grid {
-            display: grid; gap: 15px;
+        .card:hover .card-number { opacity: 0.2; color: var(--neon); }
+
+        /* Barra de Datos Inferior */
+        .footer-info {
+            display: grid; grid-template-columns: 1fr auto 1fr;
+            align-items: center; font-size: 0.6rem; letter-spacing: 3px;
+            color: rgba(255,255,255,0.4);
         }
 
-        .nav-item {
-            position: relative;
-            padding: 18px;
-            background: rgba(0, 242, 255, 0.05);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            text-decoration: none; color: #fff;
-            text-transform: uppercase; font-weight: 700;
-            letter-spacing: 3px; overflow: hidden;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-align: center;
+        .stat-box { display: flex; flex-direction: column; gap: 5px; }
+        .stat-box strong { color: var(--neon); font-size: 1.2rem; font-family: 'Syncopate'; }
+
+        .owner-section {
+            text-align: center; border: 1px solid var(--neon);
+            padding: 10px 30px; border-radius: 50px; color: var(--neon);
         }
 
-        .nav-item::before {
-            content: ''; position: absolute; top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.2), transparent);
-            transition: 0.5s;
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-100px, 100px); }
         }
 
-        .nav-item:hover {
-            background: rgba(0, 242, 255, 0.15);
-            border-color: var(--cyan);
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
-            color: var(--cyan);
+        /* Mobile Fix */
+        @media (max-width: 900px) {
+            .menu-container { flex-direction: column; overflow-y: auto; padding-top: 50px; }
+            .card { width: 100%; height: 150px; }
+            .ui-wrapper { padding: 20px; }
         }
-
-        .nav-item:hover::before { left: 100%; }
-
-        /* Sección del Propietario */
-        .admin-tag {
-            display: flex; align-items: center;
-            margin-top: 30px; padding: 10px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 8px;
-            border-left: 4px solid var(--cyan);
-        }
-
-        .admin-avatar {
-            width: 50px; height: 50px;
-            border: 2px solid var(--cyan);
-            border-radius: 50%; padding: 2px;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-
-        .admin-info span {
-            display: block;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem; color: var(--cyan);
-        }
-        .admin-info strong { font-size: 1.1rem; color: #fff; letter-spacing: 1px; }
-
-        /* BARRA DE ESTADO INFERIOR */
-        .status-footer {
-            margin-top: 25px;
-        }
-
-        .data-stream {
-            display: flex; justify-content: space-between;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 12px; color: var(--cyan);
-            margin-bottom: 5px; text-shadow: 0 0 5px var(--cyan);
-        }
-
-        .bar-container {
-            width: 100%; height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px; overflow: hidden;
-            border: 1px solid rgba(0, 242, 255, 0.3);
-        }
-
-        .bar-fill {
-            height: 100%; width: 0%;
-            background: linear-gradient(90deg, var(--cyan), #fff);
-            box-shadow: 0 0 10px var(--cyan);
-            transition: width 1.5s ease-in-out;
-        }
-
-        /* Animaciones */
-        @keyframes flicker {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-            20%, 24%, 55% { opacity: 0.4; }
-        }
-
-        /* Efecto de ruido/glitch sutil */
-        .scanline {
-            width: 100%; height: 100px; z-index: 20;
-            background: linear-gradient(0deg, transparent 0%, rgba(0, 242, 255, 0.03) 50%, transparent 100%);
-            position: absolute; top: -100px;
-            animation: scan 4s linear infinite;
-        }
-
-        @keyframes scan {
-            0% { top: -100px; }
-            100% { top: 100%; }
-        }
-
     </style>
 </head>
 <body>
 
-    <div class="viewport">
-        <div class="grid-overlay"></div>
-        <div class="scanline"></div>
+    <div class="ambient-bg">
+        <div class="glow-sphere"></div>
+    </div>
 
-        <div class="main-frame">
-            <div class="corner top-l"></div>
-            <div class="corner top-r"></div>
-            <div class="corner bot-l"></div>
-            <div class="corner bot-r"></div>
+    <div class="ui-wrapper">
+        <header class="top-nav">
+            <div class="logo">MOONLIGHT</div>
+            <div style="font-size: 0.7rem; letter-spacing: 2px; opacity: 0.5;">v3.0 SYSTEM // STABLE</div>
+        </header>
 
-            <div class="header">
-                <h1>MOONLIGHT</h1>
-                <div style="font-family: 'Share Tech Mono'; font-size: 10px; color: var(--cyan); opacity: 0.7;">
-                    STATUS: SECURE CONNECTION // SYSTEM ONLINE
-                </div>
+        <main class="menu-container">
+            <a href="tetas.html" class="card">
+                <span class="card-number">01</span>
+                <span class="card-title">Categoría: Tetas</span>
+            </a>
+            <a href="gay.html" class="card">
+                <span class="card-number">02</span>
+                <span class="card-title">Categoría: Gay</span>
+            </a>
+            <a href="pene.html" class="card">
+                <span class="card-number">03</span>
+                <span class="card-title">Categoría: Pene</span>
+            </a>
+        </main>
+
+        <footer class="footer-info">
+            <div class="stat-box">
+                <span>ESTADÍSTICAS GLOBALES</span>
+                <strong id="total-count">000</strong>
+            </div>
+            
+            <div class="owner-section">
+                OPERATOR: 𝓢𝓽𝓪𝓻𝓛𝔂𝓷
             </div>
 
-            <div class="menu-grid">
-                <a href="tetas.html" class="nav-item">Files: Tetas</a>
-                <a href="gay.html" class="nav-item">Files: Gay</a>
-                <a href="pene.html" class="nav-item">Files: Pene</a>
+            <div class="stat-box" style="text-align: right;">
+                <span id="file-distribution">IMG: 0 | VID: 0</span>
+                <span style="color: var(--neon); font-weight: bold;">ENCRIPTACIÓN ACTIVA</span>
             </div>
-
-            <div class="admin-tag">
-                <img src="https://files.catbox.moe/mqcxut.jpeg" class="admin-avatar">
-                <div class="admin-info">
-                    <span>AUTHORIZED OPERATOR</span>
-                    <strong>𝓢𝓽𝓪𝓻𝓛𝔂𝓷 // OWNER</strong>
-                </div>
-            </div>
-
-            <div class="status-footer">
-                <div class="data-stream">
-                    <span id="global-counter">INDEXING DATA...</span>
-                    <span id="bat-val">BAT: --%</span>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" id="status-bar"></div>
-                </div>
-            </div>
-        </div>
+        </footer>
     </div>
 
     <script>
-        // Función para leer y sumar estadísticas
-        function loadStats() {
-            let totalIMG = 0;
-            let totalVID = 0;
+        function updateUI() {
+            let totalF = 0;
+            let totalV = 0;
 
-            const categories = ['tetas', 'gay', 'pene'];
-            categories.forEach(cat => {
+            ['tetas', 'gay', 'pene'].forEach(cat => {
                 const data = JSON.parse(localStorage.getItem('stats_' + cat));
                 if (data) {
-                    totalIMG += data.f || 0;
-                    totalVID += data.v || 0;
+                    totalF += (data.f || 0);
+                    totalV += (data.v || 0);
                 }
             });
 
-            const total = totalIMG + totalVID;
-            const counterElement = document.getElementById('global-counter');
-            
-            if(total === 0) {
-                counterElement.textContent = "DATABASE: OFFLINE (ENTER FOLDERS)";
-            } else {
-                counterElement.textContent = `TOTAL: ${totalIMG} IMG | ${totalVID} VID`;
-            }
+            document.getElementById('total-count').textContent = (totalF + totalV).toString().padStart(3, '0');
+            document.getElementById('file-distribution').textContent = `IMG: ${totalF} | VID: ${totalV}`;
         }
 
-        // Función de Batería y barra
-        function updateSystem() {
-            if (navigator.getBattery) {
-                navigator.getBattery().then(bat => {
-                    const level = Math.floor(bat.level * 100);
-                    document.getElementById('bat-val').textContent = `POWER: ${level}%`;
-                    document.getElementById('status-bar').style.width = level + '%';
-                });
-            } else {
-                // Fallback si el navegador no soporta batería
-                document.getElementById('status-bar').style.width = '100%';
-                document.getElementById('bat-val').textContent = 'POWER: MAX';
-            }
-        }
-
-        // Ejecutar al cargar
-        window.onload = () => {
-            loadStats();
-            updateSystem();
-        };
-
-        // Refrescar al volver a la pestaña
-        window.onfocus = loadStats;
+        window.onload = updateUI;
+        window.onfocus = updateUI;
     </script>
 </body>
 </html>
