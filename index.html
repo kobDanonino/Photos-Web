@@ -4,156 +4,271 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://files.catbox.moe/da8obc.jpeg" type="image/jpeg">
-    <title>Moonlight - Tactical Interface</title>
+    <title>Moonlight NSFW</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap');
 
         :root {
             --cyan: #00f2ff;
-            --dark-cyan: #00666b;
-            --dark-bg: #030303;
-            --panel-bg: rgba(5, 10, 15, 0.9);
+            --deep-blue: #001a1c;
+            --accent: #ff0055; /* Color para alertas */
+            --glass: rgba(0, 15, 20, 0.85);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--dark-bg); color: white;
-            font-family: 'Rajdhani', sans-serif; overflow: hidden;
+            background: #000; color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Fondo con video o imagen y overlay de rejilla */
+        .viewport {
+            position: relative;
+            width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://files.catbox.moe/tut48g.jpeg');
+            background-size: cover; background-position: center;
             display: flex; justify-content: center; align-items: center;
         }
 
-        .bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.5)), url('https://files.catbox.moe/tut48g.jpeg');
-            background-size: cover; background-position: center; z-index: -1;
-            filter: brightness(0.4);
+        .grid-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
         }
 
-        .terminal {
-            position: relative; width: 90%; max-width: 420px;
-            padding: 40px 30px; background: var(--panel-bg);
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            backdrop-filter: blur(15px);
-            clip-path: polygon(0 0, 92% 0, 100% 8%, 100% 100%, 8% 100%, 0 92%);
+        /* Marco de la Terminal */
+        .main-frame {
+            position: relative;
+            width: 90%; max-width: 450px;
+            background: var(--glass);
+            border: 2px solid var(--cyan);
+            padding: 40px 20px;
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.2), inset 0 0 20px rgba(0, 242, 255, 0.1);
+            clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%);
+            backdrop-filter: blur(10px);
         }
 
+        /* Decoraciones de las esquinas */
+        .corner {
+            position: absolute; width: 20px; height: 20px;
+            border: 3px solid var(--cyan);
+        }
+        .top-l { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+        .top-r { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+        .bot-l { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+        .bot-r { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
+        /* Título con Efecto */
+        .header { text-align: center; margin-bottom: 30px; }
         .header h1 {
-            font-family: 'Syncopate', sans-serif; font-size: 1em;
-            letter-spacing: 10px; color: var(--cyan); margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem; letter-spacing: 8px;
+            margin: 0; color: var(--cyan);
+            text-shadow: 0 0 15px var(--cyan);
+            animation: flicker 3s infinite;
         }
 
-        .nav-links { display: flex; flex-direction: column; gap: 10px; margin: 30px 0; }
-
-        .btn {
-            padding: 15px; text-decoration: none; color: white;
-            font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
-            background: rgba(255,255,255,0.03); border-left: 3px solid var(--dark-cyan);
-            transition: 0.3s; text-align: center;
+        /* Botones de Categoría */
+        .menu-grid {
+            display: grid; gap: 15px;
         }
 
-        .btn:hover {
-            background: rgba(0, 242, 255, 0.1); border-left: 3px solid var(--cyan);
-            transform: translateX(5px); color: var(--cyan);
+        .nav-item {
+            position: relative;
+            padding: 18px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            text-decoration: none; color: #fff;
+            text-transform: uppercase; font-weight: 700;
+            letter-spacing: 3px; overflow: hidden;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
         }
 
-        /* --- BARRA DE ESTADO TÁCTICA --- */
-        .status-footer-bar {
-            margin-top: 25px; padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+        .nav-item::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.2), transparent);
+            transition: 0.5s;
         }
 
-        .bar-labels {
+        .nav-item:hover {
+            background: rgba(0, 242, 255, 0.15);
+            border-color: var(--cyan);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+            color: var(--cyan);
+        }
+
+        .nav-item:hover::before { left: 100%; }
+
+        /* Sección del Propietario */
+        .admin-tag {
+            display: flex; align-items: center;
+            margin-top: 30px; padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
+            border-left: 4px solid var(--cyan);
+        }
+
+        .admin-avatar {
+            width: 50px; height: 50px;
+            border: 2px solid var(--cyan);
+            border-radius: 50%; padding: 2px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .admin-info span {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem; color: var(--cyan);
+        }
+        .admin-info strong { font-size: 1.1rem; color: #fff; letter-spacing: 1px; }
+
+        /* BARRA DE ESTADO INFERIOR */
+        .status-footer {
+            margin-top: 25px;
+        }
+
+        .data-stream {
             display: flex; justify-content: space-between;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 11px; color: var(--cyan); margin-bottom: 8px;
+            font-size: 12px; color: var(--cyan);
+            margin-bottom: 5px; text-shadow: 0 0 5px var(--cyan);
         }
 
-        .progress-track {
-            width: 100%; height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 242, 255, 0.2);
+        .bar-container {
+            width: 100%; height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px; overflow: hidden;
+            border: 1px solid rgba(0, 242, 255, 0.3);
         }
 
-        .progress-fill {
+        .bar-fill {
             height: 100%; width: 0%;
-            background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
-            transition: width 1s ease;
+            background: linear-gradient(90deg, var(--cyan), #fff);
+            box-shadow: 0 0 10px var(--cyan);
+            transition: width 1.5s ease-in-out;
         }
 
-        .owner-section {
-            display: flex; align-items: center; gap: 10px; margin-top: 20px;
+        /* Animaciones */
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.4; }
         }
-        .owner-avatar { width: 40px; height: 40px; border: 1px solid var(--cyan); border-radius: 50%; }
+
+        /* Efecto de ruido/glitch sutil */
+        .scanline {
+            width: 100%; height: 100px; z-index: 20;
+            background: linear-gradient(0deg, transparent 0%, rgba(0, 242, 255, 0.03) 50%, transparent 100%);
+            position: absolute; top: -100px;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: -100px; }
+            100% { top: 100%; }
+        }
 
     </style>
 </head>
 <body>
 
-    <div class="bg-overlay"></div>
+    <div class="viewport">
+        <div class="grid-overlay"></div>
+        <div class="scanline"></div>
 
-    <div class="terminal">
-        <div class="header">
-            <h1>MOONLIGHT</h1>
-            <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px;">ENCRYPTED DATABASE ACCESS</p>
-        </div>
+        <div class="main-frame">
+            <div class="corner top-l"></div>
+            <div class="corner top-r"></div>
+            <div class="corner bot-l"></div>
+            <div class="corner bot-r"></div>
 
-        <nav class="nav-links">
-            <a href="tetas.html" class="btn">Tetas</a>
-            <a href="gay.html" class="btn">Gay</a>
-            <a href="pene.html" class="btn">Pene</a>
-        </nav>
-
-        <div class="owner-section">
-            <img src="https://files.catbox.moe/mqcxut.jpeg" class="owner-avatar">
-            <div style="font-size: 12px;">
-                <div style="color: var(--cyan); font-family: 'Syncopate'; font-size: 8px;">ADMINISTRATOR</div>
-                <div>𝓢𝓽𝓪𝓻𝓛𝔂𝓷 // OWNER</div>
+            <div class="header">
+                <h1>MOONLIGHT</h1>
+                <div style="font-family: 'Share Tech Mono'; font-size: 10px; color: var(--cyan); opacity: 0.7;">
+                    STATUS: SECURE CONNECTION // SYSTEM ONLINE
+                </div>
             </div>
-        </div>
 
-        <div class="status-footer-bar">
-            <div class="bar-labels">
-                <span id="counter-text">DATA: 0 IMG | 0 VID</span>
-                <span>BAT: <span id="bat-pct">--%</span></span>
+            <div class="menu-grid">
+                <a href="tetas.html" class="nav-item">Files: Tetas</a>
+                <a href="gay.html" class="nav-item">Files: Gay</a>
+                <a href="pene.html" class="nav-item">Files: Pene</a>
             </div>
-            <div class="progress-track">
-                <div class="progress-fill" id="bat-bar"></div>
+
+            <div class="admin-tag">
+                <img src="https://files.catbox.moe/mqcxut.jpeg" class="admin-avatar">
+                <div class="admin-info">
+                    <span>AUTHORIZED OPERATOR</span>
+                    <strong>𝓢𝓽𝓪𝓻𝓛𝔂𝓷 // OWNER</strong>
+                </div>
+            </div>
+
+            <div class="status-footer">
+                <div class="data-stream">
+                    <span id="global-counter">INDEXING DATA...</span>
+                    <span id="bat-val">BAT: --%</span>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" id="status-bar"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        function updateStats() {
-            let totalFotos = 0;
-            let totalVideos = 0;
+        // Función para leer y sumar estadísticas
+        function loadStats() {
+            let totalIMG = 0;
+            let totalVID = 0;
 
-            // Buscamos los datos guardados de cada archivo
-            ['tetas', 'gay', 'pene'].forEach(cat => {
+            const categories = ['tetas', 'gay', 'pene'];
+            categories.forEach(cat => {
                 const data = JSON.parse(localStorage.getItem('stats_' + cat));
-                if(data) {
-                    totalFotos += data.f;
-                    totalVideos += data.v;
+                if (data) {
+                    totalIMG += data.f || 0;
+                    totalVID += data.v || 0;
                 }
             });
 
-            document.getElementById('counter-text').textContent = `TOTAL: ${totalFotos} IMG | ${totalVideos} VID`;
-        }
-
-        function initBattery() {
-            if (navigator.getBattery) {
-                navigator.getBattery().then(bat => {
-                    const refresh = () => {
-                        document.getElementById('bat-pct').textContent = Math.floor(bat.level * 100) + "%";
-                        document.getElementById('bat-bar').style.width = (bat.level * 100) + "%";
-                    };
-                    refresh();
-                    bat.onlevelchange = refresh;
-                });
+            const total = totalIMG + totalVID;
+            const counterElement = document.getElementById('global-counter');
+            
+            if(total === 0) {
+                counterElement.textContent = "DATABASE: OFFLINE (ENTER FOLDERS)";
+            } else {
+                counterElement.textContent = `TOTAL: ${totalIMG} IMG | ${totalVID} VID`;
             }
         }
 
-        updateStats();
-        initBattery();
+        // Función de Batería y barra
+        function updateSystem() {
+            if (navigator.getBattery) {
+                navigator.getBattery().then(bat => {
+                    const level = Math.floor(bat.level * 100);
+                    document.getElementById('bat-val').textContent = `POWER: ${level}%`;
+                    document.getElementById('status-bar').style.width = level + '%';
+                });
+            } else {
+                // Fallback si el navegador no soporta batería
+                document.getElementById('status-bar').style.width = '100%';
+                document.getElementById('bat-val').textContent = 'POWER: MAX';
+            }
+        }
+
+        // Ejecutar al cargar
+        window.onload = () => {
+            loadStats();
+            updateSystem();
+        };
+
+        // Refrescar al volver a la pestaña
+        window.onfocus = loadStats;
     </script>
 </body>
 </html>
