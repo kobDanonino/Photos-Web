@@ -7,113 +7,42 @@
     <title>Moonlight - Viewer Tetas</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Rajdhani:wght@500&display=swap');
-
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: #050505; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center; 
-            font-family: 'Rajdhani', sans-serif;
-        }
-
-        /* Capa de escaneo estético */
-        body::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, rgba(0,242,255,0.03) 0px, rgba(0,242,255,0.03) 1px, transparent 2px, transparent 4px);
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        #content {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 1;
-        }
-
-        img, video { 
-            max-width: 100%; max-height: 100%; 
-            object-fit: contain; 
-            box-shadow: 0 0 50px rgba(0,0,0,1);
-        }
-
-        .back { 
-            position: absolute; top: 20px; right: 20px; 
-            color: #00f2ff; text-decoration: none; 
-            background: rgba(0,0,0,0.8); 
-            padding: 10px 20px; 
-            border: 1px solid #00f2ff;
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.7em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            z-index: 10;
-            transition: 0.3s;
-        }
-
-        .back:hover {
-            background: #00f2ff;
-            color: #000;
-            box-shadow: 0 0 20px rgba(0,242,255,0.6);
-        }
-
-        .loading-text {
-            color: #00f2ff;
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.8em;
-            letter-spacing: 5px;
-            animation: pulse 1.5s infinite;
-        }
-
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #050505; overflow: hidden; display: flex; align-items: center; justify-content: center; font-family: 'Rajdhani', sans-serif; }
+        body::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,242,255,0.03) 0px, rgba(0,242,255,0.03) 1px, transparent 2px, transparent 4px); pointer-events: none; z-index: 5; }
+        #content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 1; }
+        img, video { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 0 50px rgba(0,0,0,1); }
+        .back { position: absolute; top: 20px; right: 20px; color: #00f2ff; text-decoration: none; background: rgba(0,0,0,0.8); padding: 10px 20px; border: 1px solid #00f2ff; font-family: 'Syncopate', sans-serif; font-size: 0.7em; text-transform: uppercase; letter-spacing: 2px; z-index: 10; transition: 0.3s; }
+        .back:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px rgba(0,242,255,0.6); }
+        .loading-text { color: #00f2ff; font-family: 'Syncopate', sans-serif; font-size: 0.8em; letter-spacing: 5px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
     <a href="index.html" class="back">← MENU</a>
-    <div id="content">
-        <div class="loading-text">DECRYPTING MEDIA...</div>
-    </div>
+    <div id="content"><div class="loading-text">DECRYPTING MEDIA...</div></div>
 
     <script>
         const media = [
-            "https://files.catbox.moe/jl76up.jpg",
-            "https://files.catbox.moe/8nkq83.jpg",
-            "https://files.catbox.moe/urh2of.jpg",
-            "https://files.catbox.moe/h22p1a.jpg",
-            "https://files.catbox.moe/dhcgo9.jpg",
-            "https://files.catbox.moe/pa8rgg.jpg",
-            "https://files.catbox.moe/qnvp4y.jpg",
-            "https://files.catbox.moe/3gcxfy.jpg",
-            "https://files.catbox.moe/fo2mt7.jpg",
-            "https://files.catbox.moe/hjhsl8.jpg",
-            "https://files.catbox.moe/u1o9pf.jpg",
-            "https://files.catbox.moe/7rgxw7.jpg",
-            "https://files.catbox.moe/67vgin.jpg",
-            "https://files.catbox.moe/3i737s.jpg",
-            "https://files.catbox.moe/svfbd9.jpg",
-            "https://files.catbox.moe/r7002l.jpg",
-            "https://files.catbox.moe/de0jag.jpg",
-            "https://files.catbox.moe/y5w63e.jpg",
-            "https://files.catbox.moe/xa45o8.jpg",
-            "https://files.catbox.moe/wwtmxu.jpg",
-            "https://files.catbox.moe/9a3v74.jpg",
-            "https://files.catbox.moe/tfvlvb.jpg",
-            "https://files.catbox.moe/zat3ec.jpg",
-            "https://files.catbox.moe/96kome.jpg", 
-            "https://files.catbox.moe/a0na12.mp4",
-            "https://files.catbox.moe/n5fh2u.mp4",
-            "https://files.catbox.moe/4lethn.mp4",
-            "https://files.catbox.moe/nea151.mp4",
-            "https://files.catbox.moe/y5bz23.mp4",
-            "https://files.catbox.moe/e26ilk.mp4",
+            "https://files.catbox.moe/jl76up.jpg", "https://files.catbox.moe/8nkq83.jpg", "https://files.catbox.moe/urh2of.jpg",
+            "https://files.catbox.moe/h22p1a.jpg", "https://files.catbox.moe/dhcgo9.jpg", "https://files.catbox.moe/pa8rgg.jpg",
+            "https://files.catbox.moe/qnvp4y.jpg", "https://files.catbox.moe/3gcxfy.jpg", "https://files.catbox.moe/fo2mt7.jpg",
+            "https://files.catbox.moe/hjhsl8.jpg", "https://files.catbox.moe/u1o9pf.jpg", "https://files.catbox.moe/7rgxw7.jpg",
+            "https://files.catbox.moe/67vgin.jpg", "https://files.catbox.moe/3i737s.jpg", "https://files.catbox.moe/svfbd9.jpg",
+            "https://files.catbox.moe/r7002l.jpg", "https://files.catbox.moe/de0jag.jpg", "https://files.catbox.moe/y5w63e.jpg",
+            "https://files.catbox.moe/xa45o8.jpg", "https://files.catbox.moe/wwtmxu.jpg", "https://files.catbox.moe/9a3v74.jpg",
+            "https://files.catbox.moe/tfvlvb.jpg", "https://files.catbox.moe/zat3ec.jpg", "https://files.catbox.moe/96kome.jpg", 
+            "https://files.catbox.moe/a0na12.mp4", "https://files.catbox.moe/n5fh2u.mp4", "https://files.catbox.moe/4lethn.mp4",
+            "https://files.catbox.moe/nea151.mp4", "https://files.catbox.moe/y5bz23.mp4", "https://files.catbox.moe/e26ilk.mp4",
             "https://files.catbox.moe/wlcdh0.mp4"
         ];
 
+        // --- LÓGICA DE CONTEO ---
+        const v = media.filter(l => l.toLowerCase().endsWith('.mp4')).length;
+        const f = media.length - v;
+        localStorage.setItem('stats_tetas', JSON.stringify({v: v, f: f}));
+
         const selected = media[Math.floor(Math.random() * media.length)];
         const container = document.getElementById('content');
-
-        // Delay para simular acceso a base de datos
         setTimeout(() => {
             if (selected.toLowerCase().endsWith('.mp4')) {
                 container.innerHTML = `<video src="${selected}" autoplay loop controls></video>`;
