@@ -77,7 +77,7 @@
             "https://files.catbox.moe/if5wxb.mp4"
         ];
 
-        // --- LÓGICA DE CONTEO ACTUALIZADA ---
+        // Lógica de conteo para el index
         const v = media.filter(l => l.toLowerCase().endsWith('.mp4')).length;
         const f = media.length - v;
         localStorage.setItem('stats_gay', JSON.stringify({v: v, f: f}));
