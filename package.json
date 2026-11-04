@@ -1,0 +1,13 @@
+{
+  "name": "photos-web",
+  "version": "1.0.0",
+  "description": "Galeria de fotos y videos",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
