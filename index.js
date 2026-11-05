@@ -1,8 +1,14 @@
 const http = require('http');
+const { Readable } = require('stream');
 
 const DATA = {"tetas":["jl76up.jpg","8nkq83.jpg","urh2of.jpg","h22p1a.jpg","dhcgo9.jpg","pa8rgg.jpg","qnvp4y.jpg","3gcxfy.jpg","fo2mt7.jpg","hjhsl8.jpg","u1o9pf.jpg","7rgxw7.jpg","67vgin.jpg","3i737s.jpg","svfbd9.jpg","r7002l.jpg","de0jag.jpg","y5w63e.jpg","xa45o8.jpg","wwtmxu.jpg","9a3v74.jpg","tfvlvb.jpg","zat3ec.jpg","96kome.jpg","a0na12.mp4","n5fh2u.mp4","4lethn.mp4","nea151.mp4","y5bz23.mp4","e26ilk.mp4","wlcdh0.mp4"],"gay":["3vhb15.jpg","yxo0vo.jpg","5vgzcc.jpg","4dsvl2.jpg","mbnhhn.jpg","vn03e1.jpg","azshoc.jpg","y3bxt9.jpg","am4rsz.jpg","ua4sy4.jpg","grq6pr.jpg","v2u0hu.jpg","f1s0wz.jpg","ecu7dv.jpg","dhlyqo.jpg","5bq86i.jpg","xkgxpu.jpg","xrpc8k.jpg","5h8lqc.jpg","9zjmzf.jpg","e3uord.jpg","u34msg.jpg","bwg6bx.jpg","s5i1uq.jpg","rlzxbe.jpg","qgvqs0.jpg","ibcqpz.jpg","y8q8ro.jpg","8u66lo.jpg","n6cxn1.jpg","cmv7eg.jpg","19a45x.jpg","t7fwc1.jpg","egmmlq.jpg","duwp76.jpg","8dg1c4.jpg","7x5idu.jpg","0ws2zh.jpg","te4n0w.jpg","z4yb8h.jpg","agg3o2.jpg","a6jcnp.jpg","83q63y.jpg","6xtpcm.jpg","r7c1xv.jpg","nlw6wl.jpg","23ecf4.jpg","l3r104.jpg","bq23nv.jpg","46fyu8.jpg","plx1ig.jpg","k8h5t1.jpg","qz84wm.jpg","5cspke.jpg","im5fz1.jpg","nb2xxe.jpg","ujw6ck.jpg","ja5b2c.jpg","9lc1gm.jpg","trmz5y.jpg","bnfcli.jpg","so0dxy.jpg","imiwv0.jpg","dti4pc.jpg","dcwn5e.jpg","irq3u0.jpg","jqj7cs.jpg","a9b9rn.jpg","ygxd4t.jpg","tosu59.jpg","30ofc7.jpg","bgcmcn.jpg","k9nwza.jpg","n1vcg8.jpg","x59f4n.jpg","qavf9s.jpg","hoid3b.jpg","l4zcx7.jpg","wigji8.jpg","i0lthl.jpg","ri7dbh.jpg","klgnaw.jpg","r8hhk2.jpg","5qam0j.jpg","dkg98d.jpg","mo979c.jpg","20czwp.mp4","ysiiz2.mp4","6mnitt.mp4","3wmlw0.mp4","8rnz6j.mp4","ywdqv9.mp4","vfhqjq.mp4","mjvecv.mp4","gdqlfn.mp4","96g94e.mp4","572vld.mp4","spaqor.mp4","xya3ec.mp4","k2ynvo.mp4","m5q20o.mp4","vwr30n.mp4","if5wxb.mp4","1buk4j.jpg","4v6acx.jpg","cmepep.jpg","cjh015.jpg","f7p62l.jpg","bwx609.jpg","ffym1h.jpg","lpup38.jpg","crfll0.jpg","rpru3e.jpg","s0i7xk.jpg","jljl2b.jpg","2kdzeu.jpg","1gzuid.jpg","6gex05.jpg","j6lzce.jpg","fk1ty8.jpg","6ltufa.jpg","4ubq0d.jpg","z4nlap.jpg","r3kqqk.jpg","0k079q.jpg","1mddw8.jpg"],"pene":["8rzptn.mp4","3zeurr.mp4","557ula.mp4","fcni0u.mp4","5zjqoi.mp4","iusk1x.mp4","6axrhp.mp4","743kj3.mp4","cct1ps.jpg","3koo1x.jpg","yeqqpg.jpg","loikzv.jpg","7xnpmt.jpg","voi2wm.jpg","zasm1u.jpg","q79b0b.jpg"]};
 
-const BASE = ['https:', '', 'files.catbox.moe', ''].join('/');
+const BASE = process.env.MEDIA_BASE || ['https:', '', 'files.catbox.moe', ''].join('/');
+const MIME = {
+  jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp',
+  mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime'
+};
+const ALL = new Set([].concat(DATA.tetas, DATA.gay, DATA.pene));
 const CATS = ['tetas', 'gay', 'pene'];
 
 function kindOf(f) {
@@ -30,8 +36,44 @@ function send(res, code, obj) {
   res.end(JSON.stringify(obj));
 }
 
-function api(req, res, qs) {
+async function proxy(req, res, name, ranged) {
+  const headers = {};
+  if (ranged && req.headers.range) headers.Range = req.headers.range;
+  let up;
+  try {
+    up = await fetch(BASE + name, { headers: headers });
+  } catch (e) {
+    return send(res, 502, { status: false, error: 'No se pudo obtener el archivo' });
+  }
+  if (!up.ok || !up.body) {
+    return send(res, 502, { status: false, error: 'No se pudo obtener el archivo' });
+  }
+  const ext = name.split('.').pop().toLowerCase();
+  const out = {
+    'Content-Type': MIME[ext] || up.headers.get('content-type') || 'application/octet-stream',
+    'Content-Disposition': 'inline',
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': ranged ? 'public, max-age=3600' : 'no-store',
+    'Accept-Ranges': ranged ? 'bytes' : 'none'
+  };
+  const len = up.headers.get('content-length');
+  const rng = up.headers.get('content-range');
+  if (len && !up.headers.get('content-encoding')) out['Content-Length'] = len;
+  if (rng) out['Content-Range'] = rng;
+  res.writeHead(up.status === 206 ? 206 : 200, out);
+  const stream = Readable.fromWeb(up.body);
+  stream.on('error', () => res.destroy());
+  res.on('close', () => stream.destroy());
+  stream.pipe(res);
+}
+
+async function api(req, res, qs) {
   const q = new URLSearchParams(qs);
+  const file = q.get('f');
+  if (file) {
+    if (!ALL.has(file)) return send(res, 404, { status: false, error: 'Archivo no encontrado' });
+    return proxy(req, res, file, true);
+  }
   const catRaw = clean(q.get('category') || q.get('categoria'));
   const type = normType(q.get('type') || q.get('tipo'));
   const format = clean(q.get('format') || q.get('formato'));
@@ -41,7 +83,7 @@ function api(req, res, qs) {
   if (type === null) {
     return send(res, 400, { status: false, error: 'Tipo invalido', types: ['image', 'video'] });
   }
-  let pool = [];
+  const pool = [];
   CATS.forEach((c) => {
     if (catRaw && c !== catRaw) return;
     DATA[c].forEach((f) => {
@@ -52,16 +94,14 @@ function api(req, res, qs) {
     return send(res, 404, { status: false, error: 'No hay archivos para ese filtro' });
   }
   const pick = pool[Math.floor(Math.random() * pool.length)];
-  const url = BASE + pick.f;
   if (format === 'json') {
-    return send(res, 200, { status: true, category: pick.c, type: kindOf(pick.f), url: url });
+    return send(res, 200, { status: true, category: pick.c, type: kindOf(pick.f), url: BASE + pick.f });
   }
-  res.writeHead(302, {
-    Location: url,
-    'Access-Control-Allow-Origin': '*',
-    'Cache-Control': 'no-store'
-  });
-  res.end();
+  if (req.headers.range) {
+    res.writeHead(302, { Location: '/api/nsfw?f=' + pick.f, 'Cache-Control': 'no-store' });
+    return res.end();
+  }
+  return proxy(req, res, pick.f, false);
 }
 
 const page = `<!DOCTYPE html>
@@ -429,13 +469,13 @@ function buildDoc() {
   var ep = h + '/api/nsfw';
   doc.innerHTML =
     '<div class="pane"><h2>' + ICON.bolt + 'Endpoint</h2>' +
-    '<p>Devuelve una imagen o video al azar. Por defecto redirige directo al archivo, asi que puedes usar el link tal cual en un bot, en una etiqueta img o video, o abrirlo en el navegador.</p>' +
+    '<p>Devuelve una imagen o video al azar directamente, sin redirigir a otra pagina. Usa el link tal cual en un bot, en una etiqueta img o video, o abrelo en el navegador y se muestra el archivo.</p>' +
     codeBox('GET ' + ep) + '</div>' +
     '<div class="pane"><h2>' + ICON.api + 'Parametros</h2>' +
     '<table class="params">' +
     '<tr><td>category</td><td>tetas, gay o pene. Si no lo pones, elige de todas</td></tr>' +
     '<tr><td>type</td><td>image o video. Tambien acepta imagen, foto y vídeo. Si no lo pones, elige cualquiera</td></tr>' +
-    '<tr><td>format</td><td>json para recibir los datos en vez de la redireccion</td></tr>' +
+    '<tr><td>format</td><td>json para recibir los datos y el link en vez del archivo</td></tr>' +
     '</table></div>' +
     '<div class="pane"><h2>' + ICON.video + 'Ejemplos</h2>' +
     '<div class="lab">Video de gay</div>' + codeBox(ep + '?category=gay&type=video') +
@@ -553,11 +593,16 @@ render();
 </body>
 </html>`;
 
-function handler(req, res) {
+async function handler(req, res) {
   const parts = req.url.split('?');
   const url = parts[0];
   if (url === '/api/nsfw' || url === '/api/nsfw/') {
-    return api(req, res, parts[1] || '');
+    try {
+      return await api(req, res, parts[1] || '');
+    } catch (e) {
+      if (!res.headersSent) return send(res, 500, { status: false, error: 'Error interno' });
+      return res.destroy();
+    }
   }
   res.writeHead(200, {
     'Content-Type': 'text/html; charset=utf-8',
