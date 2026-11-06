@@ -206,12 +206,15 @@ async function auth(req, res, url, qs) {
     body: JSON.stringify({ client_id: GH_ID, client_secret: GH_SECRET, code: code, redirect_uri: back })
   });
   const tk = await tr.json();
-  if (!tk.access_token) return redirect(res, '/?e=token', [cookie(req, 'ms', '', 0)]);
+  if (!tk.access_token) {
+    const why = String(tk.error || 'sin_respuesta').replace(/[^a-z_]/g, '').slice(0, 40);
+    return redirect(res, '/?e=token&d=' + why, [cookie(req, 'ms', '', 0)]);
+  }
   const ur = await fetch(GH_USER, {
     headers: { Authorization: 'Bearer ' + tk.access_token, Accept: 'application/vnd.github+json', 'User-Agent': 'moonlight' }
   });
   const me = await ur.json();
-  if (!me.login) return redirect(res, '/?e=token', [cookie(req, 'ms', '', 0)]);
+  if (!me.login) return redirect(res, '/?e=token&d=sin_usuario', [cookie(req, 'ms', '', 0)]);
   if (ALLOWED.length && !ALLOWED.includes(String(me.login).toLowerCase())) {
     return redirect(res, '/?e=denied', [cookie(req, 'ms', '', 0)]);
   }
@@ -820,7 +823,8 @@ var ERRS = {
 };
 var em = /[?&]e=([a-z]+)/.exec(location.search);
 if (em && ERRS[em[1]]) {
-  $('err').textContent = ERRS[em[1]];
+  var dm = /[?&]d=([a-z_]+)/.exec(location.search);
+  $('err').textContent = ERRS[em[1]] + (dm ? ' (' + dm[1] + ')' : '');
   $('err').classList.remove('hide');
   try { history.replaceState(null, '', location.pathname); } catch (e) {}
 }
@@ -874,7 +878,7 @@ async function handler(req, res) {
     try {
       return await auth(req, res, url, parts[1] || '');
     } catch (e) {
-      return redirect(res, '/?e=token');
+      return redirect(res, '/?e=token&d=error_de_red');
     }
   }
   res.writeHead(200, {
