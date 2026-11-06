@@ -1,5 +1,6 @@
 const http = require('http');
 const { Readable } = require('stream');
+const crypto = require('crypto');
 
 const DATA = {"tetas":["jl76up.jpg","8nkq83.jpg","urh2of.jpg","h22p1a.jpg","dhcgo9.jpg","pa8rgg.jpg","qnvp4y.jpg","3gcxfy.jpg","fo2mt7.jpg","hjhsl8.jpg","u1o9pf.jpg","7rgxw7.jpg","67vgin.jpg","3i737s.jpg","svfbd9.jpg","r7002l.jpg","de0jag.jpg","y5w63e.jpg","xa45o8.jpg","wwtmxu.jpg","9a3v74.jpg","tfvlvb.jpg","zat3ec.jpg","96kome.jpg","a0na12.mp4","n5fh2u.mp4","4lethn.mp4","nea151.mp4","y5bz23.mp4","e26ilk.mp4","wlcdh0.mp4"],"gay":["3vhb15.jpg","yxo0vo.jpg","5vgzcc.jpg","4dsvl2.jpg","mbnhhn.jpg","vn03e1.jpg","azshoc.jpg","y3bxt9.jpg","am4rsz.jpg","ua4sy4.jpg","grq6pr.jpg","v2u0hu.jpg","f1s0wz.jpg","ecu7dv.jpg","dhlyqo.jpg","5bq86i.jpg","xkgxpu.jpg","xrpc8k.jpg","5h8lqc.jpg","9zjmzf.jpg","e3uord.jpg","u34msg.jpg","bwg6bx.jpg","s5i1uq.jpg","rlzxbe.jpg","qgvqs0.jpg","ibcqpz.jpg","y8q8ro.jpg","8u66lo.jpg","n6cxn1.jpg","cmv7eg.jpg","19a45x.jpg","t7fwc1.jpg","egmmlq.jpg","duwp76.jpg","8dg1c4.jpg","7x5idu.jpg","0ws2zh.jpg","te4n0w.jpg","z4yb8h.jpg","agg3o2.jpg","a6jcnp.jpg","83q63y.jpg","6xtpcm.jpg","r7c1xv.jpg","nlw6wl.jpg","23ecf4.jpg","l3r104.jpg","bq23nv.jpg","46fyu8.jpg","plx1ig.jpg","k8h5t1.jpg","qz84wm.jpg","5cspke.jpg","im5fz1.jpg","nb2xxe.jpg","ujw6ck.jpg","ja5b2c.jpg","9lc1gm.jpg","trmz5y.jpg","bnfcli.jpg","so0dxy.jpg","imiwv0.jpg","dti4pc.jpg","dcwn5e.jpg","irq3u0.jpg","jqj7cs.jpg","a9b9rn.jpg","ygxd4t.jpg","tosu59.jpg","30ofc7.jpg","bgcmcn.jpg","k9nwza.jpg","n1vcg8.jpg","x59f4n.jpg","qavf9s.jpg","hoid3b.jpg","l4zcx7.jpg","wigji8.jpg","i0lthl.jpg","ri7dbh.jpg","klgnaw.jpg","r8hhk2.jpg","5qam0j.jpg","dkg98d.jpg","mo979c.jpg","20czwp.mp4","ysiiz2.mp4","6mnitt.mp4","3wmlw0.mp4","8rnz6j.mp4","ywdqv9.mp4","vfhqjq.mp4","mjvecv.mp4","gdqlfn.mp4","96g94e.mp4","572vld.mp4","spaqor.mp4","xya3ec.mp4","k2ynvo.mp4","m5q20o.mp4","vwr30n.mp4","if5wxb.mp4","1buk4j.jpg","4v6acx.jpg","cmepep.jpg","cjh015.jpg","f7p62l.jpg","bwx609.jpg","ffym1h.jpg","lpup38.jpg","crfll0.jpg","rpru3e.jpg","s0i7xk.jpg","jljl2b.jpg","2kdzeu.jpg","1gzuid.jpg","6gex05.jpg","j6lzce.jpg","fk1ty8.jpg","6ltufa.jpg","4ubq0d.jpg","z4nlap.jpg","r3kqqk.jpg","0k079q.jpg","1mddw8.jpg"],"pene":["8rzptn.mp4","3zeurr.mp4","557ula.mp4","fcni0u.mp4","5zjqoi.mp4","iusk1x.mp4","6axrhp.mp4","743kj3.mp4","cct1ps.jpg","3koo1x.jpg","yeqqpg.jpg","loikzv.jpg","7xnpmt.jpg","voi2wm.jpg","zasm1u.jpg","q79b0b.jpg","rgmq3b.mp4","4kow6d.mp4","875wez.mp4","auu9ei.mp4","o6yq19.jpg","4jlghs.mp4","d1cczs.jpg","3tddi1.jpg","yt4w5b.mp4","1f0px6.mp4","b65f5o.mp4","c8w1ek.mp4","v98291.mp4","np83y1.mp4","1rsi2e.mp4","wsm8lu.mp4","4xraha.jpg"]};
 
@@ -104,6 +105,130 @@ async function api(req, res, qs) {
   return proxy(req, res, pick.f, false);
 }
 
+
+const GH_ID = process.env.GITHUB_ID || 'Ov23lix8kM8uwqcJBRNi';
+const GH_SECRET = process.env.GITHUB_SECRET || '';
+const KEY = process.env.SESSION_SECRET || GH_SECRET;
+const ALLOWED = (process.env.ALLOWED_USERS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+const site = (host, p) => ['https:', '', host].join('/') + p;
+const GH_AUTH = site('github.com', '/login/oauth/authorize');
+const GH_TOKEN = site('github.com', '/login/oauth/access_token');
+const GH_USER = site('api.github.com', '/user');
+const AVATAR = site('avatars.githubusercontent.com', '/');
+const DAYS30 = 30 * 24 * 60 * 60;
+
+const COUNT = { all: 0, image: 0, video: 0 };
+CATS.forEach((c) => DATA[c].forEach((f) => {
+  COUNT.all++;
+  COUNT[kindOf(f)]++;
+}));
+const EMPTY = { tetas: [], gay: [], pene: [] };
+
+function origin(req) {
+  if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/+$/, '');
+  const proto = String(req.headers['x-forwarded-proto'] || 'http').split(',')[0];
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  return proto + ':' + '/' + '/' + host;
+}
+
+function parseCookies(req) {
+  const out = {};
+  String(req.headers.cookie || '').split(';').forEach((p) => {
+    const i = p.indexOf('=');
+    if (i > 0) {
+      try { out[p.slice(0, i).trim()] = decodeURIComponent(p.slice(i + 1).trim()); } catch (e) {}
+    }
+  });
+  return out;
+}
+
+function sign(s) {
+  return crypto.createHmac('sha256', KEY).update(s).digest('base64url');
+}
+
+function makeSession(u) {
+  const body = Buffer.from(JSON.stringify(u)).toString('base64url');
+  return body + '.' + sign(body);
+}
+
+function readSession(req) {
+  if (!KEY) return null;
+  const c = parseCookies(req).ml;
+  if (!c) return null;
+  const parts = c.split('.');
+  if (parts.length !== 2) return null;
+  const good = sign(parts[0]);
+  if (parts[1].length !== good.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(parts[1]), Buffer.from(good))) return null;
+  try {
+    const u = JSON.parse(Buffer.from(parts[0], 'base64url').toString());
+    if (!u.exp || u.exp < Date.now() || !u.u) return null;
+    if (ALLOWED.length && !ALLOWED.includes(String(u.u).toLowerCase())) return null;
+    return u;
+  } catch (e) {
+    return null;
+  }
+}
+
+function cookie(req, name, val, age) {
+  const secure = String(req.headers['x-forwarded-proto'] || '').split(',')[0] === 'https' ? '; Secure' : '';
+  return name + '=' + encodeURIComponent(val) + '; HttpOnly; SameSite=Lax; Path=/; Max-Age=' + age + secure;
+}
+
+function redirect(res, loc, cookies) {
+  const h = { Location: loc, 'Cache-Control': 'no-store' };
+  if (cookies) h['Set-Cookie'] = cookies;
+  res.writeHead(302, h);
+  res.end();
+}
+
+async function auth(req, res, url, qs) {
+  const q = new URLSearchParams(qs);
+  if (url === '/auth/logout') {
+    return redirect(res, '/', [cookie(req, 'ml', '', 0), cookie(req, 'ms', '', 0)]);
+  }
+  if (!GH_SECRET) return redirect(res, '/?e=config');
+  const back = origin(req) + '/auth/github/callback';
+  if (url === '/auth/github') {
+    const st = crypto.randomBytes(16).toString('hex');
+    const p = new URLSearchParams({ client_id: GH_ID, redirect_uri: back, scope: 'read:user', state: st });
+    return redirect(res, GH_AUTH + '?' + p.toString(), [cookie(req, 'ms', st, 600)]);
+  }
+  if (url !== '/auth/github/callback') return redirect(res, '/');
+  const saved = parseCookies(req).ms;
+  const code = q.get('code');
+  if (!code || !saved || q.get('state') !== saved) {
+    return redirect(res, '/?e=state', [cookie(req, 'ms', '', 0)]);
+  }
+  const tr = await fetch(GH_TOKEN, {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'User-Agent': 'moonlight' },
+    body: JSON.stringify({ client_id: GH_ID, client_secret: GH_SECRET, code: code, redirect_uri: back })
+  });
+  const tk = await tr.json();
+  if (!tk.access_token) return redirect(res, '/?e=token', [cookie(req, 'ms', '', 0)]);
+  const ur = await fetch(GH_USER, {
+    headers: { Authorization: 'Bearer ' + tk.access_token, Accept: 'application/vnd.github+json', 'User-Agent': 'moonlight' }
+  });
+  const me = await ur.json();
+  if (!me.login) return redirect(res, '/?e=token', [cookie(req, 'ms', '', 0)]);
+  if (ALLOWED.length && !ALLOWED.includes(String(me.login).toLowerCase())) {
+    return redirect(res, '/?e=denied', [cookie(req, 'ms', '', 0)]);
+  }
+  const avatar = String(me.avatar_url || '').indexOf(AVATAR) === 0 ? me.avatar_url : '';
+  const session = makeSession({
+    u: String(me.login),
+    n: String(me.name || me.login).slice(0, 60),
+    a: avatar,
+    exp: Date.now() + DAYS30 * 1000
+  });
+  return redirect(res, '/', [cookie(req, 'ml', session, DAYS30), cookie(req, 'ms', '', 0)]);
+}
+
+function safeJson(x) {
+  return JSON.stringify(x).replace(/</g, '\\u003c');
+}
+
 const page = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -187,12 +312,12 @@ button { font-family: inherit; }
 .rowc.mini .chip.on { background: var(--sky); color: var(--ink); }
 .rowc.mini svg { width: 13px; height: 13px; }
 main { max-width: 1000px; margin: 0 auto; padding: 14px 14px 50px; }
-#grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 8px; }
+#grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 9px; }
 .t {
   position: relative; border: 0; padding: 0; cursor: pointer;
-  aspect-ratio: 1; border-radius: 16px; overflow: hidden;
+  aspect-ratio: 1; border-radius: 18px; overflow: hidden;
   background: var(--pink); box-shadow: var(--shadow);
-  content-visibility: auto; contain-intrinsic-size: 82px 82px;
+  content-visibility: auto; contain-intrinsic-size: 96px 96px;
   transition: transform 0.18s;
 }
 .t:nth-child(4n+2) { background: var(--sky); }
@@ -339,6 +464,18 @@ main { max-width: 1000px; margin: 0 auto; padding: 14px 14px 50px; }
 .enter svg { width: 18px; height: 18px; }
 .note { font-size: 11px; color: var(--soft); margin-top: 12px; line-height: 1.5; }
 .leave { border: 0; background: transparent; color: var(--soft); font-size: 12px; margin-top: 6px; cursor: pointer; text-decoration: underline; }
+html.anon .top, html.anon main { display: none; }
+a.item { text-decoration: none; }
+.me { display: flex; align-items: center; gap: 10px; background: var(--lilac); border-radius: 16px; padding: 10px; margin-bottom: 14px; }
+.me img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #fff; flex: none; }
+.me div { min-width: 0; }
+.me b { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.me span { font-size: 11px; color: var(--soft); }
+.who { display: inline-flex; align-items: center; gap: 8px; background: #ffffffd9; border-radius: 999px; padding: 5px 14px 5px 5px; margin-bottom: 14px; box-shadow: var(--shadow); font-size: 13px; }
+.who img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+a.enter { text-decoration: none; }
+.gh { background: linear-gradient(90deg, #7a7595, #4b4666); box-shadow: 0 10px 24px rgba(75, 70, 102, 0.3); }
+.err { font-size: 12px; color: #b4457d; background: #ffe3ef; border-radius: 12px; padding: 8px 10px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -359,8 +496,10 @@ main { max-width: 1000px; margin: 0 auto; padding: 14px 14px 50px; }
     <div class="brand"><span class="logo" id="slogo"></span>Moonlight</div>
     <button class="sx" id="sx" aria-label="Cerrar"></button>
   </div>
+  <div class="me hide" id="me"></div>
   <button class="item on" id="m-home"><span class="ico" id="i-home"></span>Inicio</button>
   <button class="item" id="m-api"><span class="ico" id="i-api"></span>API</button>
+  <a class="item hide" id="m-out" href="/auth/logout"><span class="ico" id="i-out"></span>Cerrar sesion</a>
   <div class="sfoot">𝓢𝓽𝓪𝓻𝓛𝔂𝓷</div>
 </aside>
 <main>
@@ -391,13 +530,18 @@ main { max-width: 1000px; margin: 0 auto; padding: 14px 14px 50px; }
       <div class="stat"><b id="n-vid">0</b><span>Videos</span></div>
     </div>
     <div class="wcat" id="wcat"></div>
+    <div class="err hide" id="err"></div>
+    <div id="who"></div>
     <button class="enter" id="enter"></button>
+    <a class="enter gh hide" id="login" href="/auth/github"></a>
     <p class="note">Contenido solo para adultos. Al entrar confirmas que tienes 18 anos o mas</p>
     <button class="leave" id="leave">Salir</button>
   </div>
 </div>
 <script>
-var DATA = ${JSON.stringify(DATA)};
+var DATA = @@DATA@@;
+var USER = @@USER@@;
+var COUNT = @@COUNT@@;
 var BASE = ['https:', '', 'files.catbox.moe', ''].join('/');
 var S = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
 var ICON = {
@@ -419,6 +563,8 @@ var ICON = {
   copy: '<svg ' + S + '><rect x="9" y="9" width="11" height="11" rx="3"></rect><path d="M5 15V6a2 2 0 0 1 2-2h8"></path></svg>',
   check: '<svg ' + S + '><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>',
   bolt: '<svg ' + S + '><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"></path></svg>',
+  github: '<svg ' + S + '><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>',
+  out: '<svg ' + S + '><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H9"></path></svg>',
   sparkle: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"></path></svg>'
 };
 var NAMES = { all: 'Todo', tetas: 'Tetas', gay: 'Gay', pene: 'Pene' };
@@ -454,6 +600,8 @@ $('x').innerHTML = ICON.close;
 $('pv').innerHTML = ICON.prev;
 $('nx').innerHTML = ICON.next;
 $('enter').innerHTML = ICON.sparkle + 'Entrar';
+$('login').innerHTML = ICON.github + 'Continuar con GitHub';
+$('i-out').innerHTML = ICON.out;
 ['st1', 'st2', 'st3', 'st4'].forEach(function (id) { $(id).innerHTML = ICON.sparkle; });
 $('wcat').innerHTML =
   '<span class="a">' + ICON.tetas + 'Tetas</span>' +
@@ -658,14 +806,41 @@ function enter() {
   document.documentElement.classList.remove('lock');
   setTimeout(function () { wel.classList.remove('show'); }, 480);
 }
+var N = USER ? totals : COUNT;
 var seen = false;
 try { seen = sessionStorage.getItem('w') === '1'; } catch (e) {}
-if (!seen) {
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; });
+}
+var ERRS = {
+  config: 'Falta configurar GITHUB_SECRET en el servidor',
+  state: 'La sesion expiro, intenta de nuevo',
+  token: 'GitHub no acepto el inicio de sesion, intenta de nuevo',
+  denied: 'Tu cuenta no tiene permiso para entrar'
+};
+var em = /[?&]e=([a-z]+)/.exec(location.search);
+if (em && ERRS[em[1]]) {
+  $('err').textContent = ERRS[em[1]];
+  $('err').classList.remove('hide');
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+}
+if (USER) {
+  var av = USER.a ? '<img alt="" referrerpolicy="no-referrer" src="' + esc(USER.a) + '">' : '';
+  $('who').innerHTML = '<span class="who">' + av + esc(USER.n) + '</span>';
+  $('me').innerHTML = av + '<div><b>' + esc(USER.n) + '</b><span>@' + esc(USER.u) + '</span></div>';
+  $('me').classList.remove('hide');
+  $('m-out').classList.remove('hide');
+} else {
+  document.documentElement.classList.add('anon');
+  $('enter').classList.add('hide');
+  $('login').classList.remove('hide');
+}
+if (!USER || !seen) {
   wel.classList.add('show');
   document.documentElement.classList.add('lock');
-  countUp('n-all', totals.all);
-  countUp('n-img', totals.image);
-  countUp('n-vid', totals.video);
+  countUp('n-all', N.all);
+  countUp('n-img', N.image);
+  countUp('n-vid', N.video);
 }
 $('enter').onclick = enter;
 $('leave').onclick = function () { location.href = 'about:blank'; };
@@ -674,6 +849,15 @@ render();
 </script>
 </body>
 </html>`;
+
+function pageFor(user) {
+  const data = user ? DATA : EMPTY;
+  const u = user ? { u: user.u, n: user.n, a: user.a } : null;
+  return page
+    .replace('@@DATA@@', () => safeJson(data))
+    .replace('@@USER@@', () => safeJson(u))
+    .replace('@@COUNT@@', () => safeJson(COUNT));
+}
 
 async function handler(req, res) {
   const parts = req.url.split('?');
@@ -686,12 +870,19 @@ async function handler(req, res) {
       return res.destroy();
     }
   }
+  if (url.indexOf('/auth/') === 0) {
+    try {
+      return await auth(req, res, url, parts[1] || '');
+    } catch (e) {
+      return redirect(res, '/?e=token');
+    }
+  }
   res.writeHead(200, {
     'Content-Type': 'text/html; charset=utf-8',
-    'Cache-Control': 'public, max-age=300',
+    'Cache-Control': 'private, no-store',
     'Referrer-Policy': 'no-referrer'
   });
-  res.end(page);
+  res.end(pageFor(readSession(req)));
 }
 
 module.exports = handler;
